@@ -255,14 +255,14 @@ class SFTPFilesStore:
 		logger.info(f"init sftp: Username ({self.username}), Passwort({('*'*len(self.password))}) und Basedir({self.basedir}) gesetzt")
 
 	def persist_file(self, path, buf, info=None, meta=None, headers=None, item=None, spider=None, ContentType=None, LogFlag=True, checksum=None):
-		logger.info(f"SFTP-persist_file Pfad: {path}")
 		if (not spider) and info:
 			spider=info.spider
 
 		# Upload file to SFTP
 		existiert_bereits=PipelineHelper.checkfile(spider, path, buf, checksum,LogFlag)
+		fullpath = f'{self.basedir}/{path}'
+		logger.info(f"SFTP-persist_file Pfad: {fullpath}, existiert bereits: {existiert_bereits}")
 		if not existiert_bereits:
-			fullpath = f'{self.basedir}/{path}'
 			SFTPFilesStore.sftp_store_file(path=fullpath, file=buf, host=self.host, username=self.username, password=self.password)
 
 	def stat_file(self, path, info):
