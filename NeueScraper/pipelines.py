@@ -251,7 +251,7 @@ class SFTPFilesStore:
 		self.host = u.hostname
 		self.username = u.username or self.SFTP_USERNAME
 		self.password = u.password or self.SFTP_PASSWORD
-		self.basedir = self.BASEDIR
+		self.basedir = u.path
 		logger.info(f"init sftp: Username ({self.username}), Passwort({('*'*len(self.password))}) und Basedir({self.basedir}) gesetzt")
 
 	def persist_file(self, path, buf, info=None, meta=None, headers=None, item=None, spider=None, ContentType=None, LogFlag=True, checksum=None):
