@@ -62,7 +62,7 @@ class BasisSpider(scrapy.Spider):
 	ERSATZDATUM='2021-01-01'
 
 	def __init__(self, *args, **kwargs):
-		super(BasisSpider, self).__init__(*args, **kwargs)
+		super().__init__(*args, **kwargs)
 		if "SCRAPY_JOB" in os.environ:
 			self.scrapy_job=os.environ['SCRAPY_JOB']
 		else:
