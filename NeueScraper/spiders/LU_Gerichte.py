@@ -22,9 +22,9 @@ class LU_Gerichte(BasisSpider):
 		return request
 	
 	def __init__(self, ab=None, neu=None, _job=None):
-		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.ab=ab
 		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = [self.get_request(ab)]
 
 

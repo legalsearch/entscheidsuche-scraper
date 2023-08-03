@@ -34,10 +34,10 @@ class BL_Gerichte(BasisSpider):
 			requests.append(request)
 		return requests
 	
-	def __init__(self, ab=None, neu=None):
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
 		self.neu=neu
-		super().__init__()
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.request_generator()
 
 	def parse_jahresliste(self, response):
