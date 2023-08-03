@@ -21,8 +21,8 @@ class LU_Gerichte(BasisSpider):
 		request=scrapy.Request(url=self.HOST+self.START_URL, callback=self.parse_form, errback=self.errback_httpbin)
 		return request
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
+		super(LU_Gerichte).__init__(ab=None, neu=None, _job=None)
 		self.ab=ab
 		self.neu=neu
 		self.request_gen = [self.get_request(ab)]
