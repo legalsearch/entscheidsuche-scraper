@@ -16,7 +16,7 @@ class TG_OG(BasisSpider):
 	name = 'TG_OG'
 	
 	SUCH_URL='/search/result.cfm?hilfe='
-	HOST ="http://ogbuch.tg.ch"
+	HOST ="https://ogbuch.tg.ch"
 	
 	reMeta=re.compile(r'(?:Obergericht|Rekurskommission|Obergerichtspräsidium),\s(?:(?P<VKammer>.+),\s)?(?P<Datum>\d+\.\s(?:'+"|".join(BasisSpider.MONATEde)+r')\s+(?:19|20)\d\d),\s+(?P<Num2>[A-Z]{1,3}(?:\s+\d\d\s+\d+|\.(?:19|20)\d\d\.\d+))')
 	reSpaces=re.compile(r'\s+')
