@@ -64,7 +64,7 @@ class BasisSpider(scrapy.Spider):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		if "SCRAPY_JOB" in os.environ:
-			self.scrapy_job=os.environ['SCRAPY_JOB']
+			self.scrapy_job = os.environ['SCRAPY_JOB']
 		else:
 			self.scrapy_job = kwargs.get('_job')
 		logger.debug("SCRAPY_JOB: "+self.scrapy_job)
