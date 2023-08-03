@@ -15,6 +15,7 @@ SPIDER_MODULES = ['NeueScraper.spiders']
 NEWSPIDER_MODULE = 'NeueScraper.spiders'
 
 LOG_ENABLED = True
+# LOG_LEVEL = 'INFO'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'NeueScraper (+http://www.yourdomain.com)'
@@ -110,4 +111,13 @@ FILES_RESULT_FIELD = "PDFFiles"
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+AWS_ENDPOINT_URL = 'https://s3.pub1.infomaniak.cloud'
+AWS_REGION_NAME = 'us-east-1'
+AWS_USE_SSL = True
+AWS_URL = 'https://s3.pub1.infomaniak.cloud/object/v1/AUTH_f3bb78fb6d5b4f7e855d2e7541a12970/lexsearch-crawler/'
+AWS_BUCKET = 'lexsearch-crawler'
+AWS_ACCESS_KEY_ID = '3b731c90b62940af972403f196b8e5f6'
+AWS_VERIFY = True
+FILES_STORE = 's3://s3.pub1.infomaniak.cloud/object/v1/AUTH_f3bb78fb6d5b4f7e855d2e7541a12970/lexsearch-crawler/'
+FILES_STORE_S3_ACL = 'public-read'
 

@@ -15,7 +15,7 @@ import json
 import scrapy
 import inspect
 from scrapy.utils.python import to_bytes
-from scrapy.utils.boto import is_botocore
+from scrapy.utils.boto import is_botocore_available
 from twisted.internet import defer, threads
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
@@ -348,6 +348,8 @@ class MyS3FilesStore(S3FilesStore):
 	shared_s3_bucket = None
 	shared_s3_prefix = None
 	instanz = None
+	AWS_URL = None
+	AWS_BUCKET = None
 
 	POLICY = 'private'  # Overriden from settings.FILES_STORE_S3_ACL in FilesPipeline.from_settings
 	HEADERS = {
@@ -365,8 +367,9 @@ class MyS3FilesStore(S3FilesStore):
 		else:
 			logger.debug("__init__ mit uri '"+uri+"' aufgerufen")
 
-		self.is_botocore = is_botocore()
-		if self.is_botocore:
+		self.is_botocore_available = is_botocore_available()
+		if self.is_botocore_available:
+			logger.info("botocore is available")
 			import botocore.session
 			session = botocore.session.get_session()
 			self.s3_client = session.create_client(
@@ -382,18 +385,29 @@ class MyS3FilesStore(S3FilesStore):
 		else:
 			from boto.s3.connection import S3Connection
 			self.S3Connection = S3Connection(self.AWS_ACCESS_KEY_ID, self.AWS_SECRET_ACCESS_KEY)
+			logger.info("botocore is NOT available", self.S3Connection)
 		if not uri.startswith("s3://"):
 			raise ValueError(f"Incorrect URI scheme in {uri}, expected 's3'")
-		self.bucket, self.prefix = uri[5:].split('/', 1)
+		self.bucket = self.AWS_BUCKET
+		self.prefix = ''
 		MyS3FilesStore.shared_s3_bucket=self.bucket
 		MyS3FilesStore.shared_s3_prefix=self.prefix
 		logger.info("_common_store_ in MyS3FilesStore gesetzt")
-		MyS3FilesStore.insanz=self
+		MyS3FilesStore.instanz=self
 		logger.info("SFTP Instanz gesetzt.")
+
+		# allJobs = self.s3_client.list_objects(Bucket='lexsearch-crawler', Prefix='Jobs')["Contents"]
+		# sortedJobs = sorted(allJobs, key=lambda k: k.get('Key', 0), reverse=True)
+		# lastJob = sortedJobs[0]
+		# logger.info("Last job in s3: %s", lastJob["Key"])
+
+		# logger.info(self.AWS_URL+lastJob["Key"])
+		# lastJobContent = self.s3_client.get_object(Bucket='lexsearch-crawler', Key=lastJob["Key"])
+		# logger.info(lastJobContent["Body"].read())
 
 	def stat_file(self, path, info):
 		def _onsuccess(boto_key):
-			if self.is_botocore:
+			if self.is_botocore_available:
 				checksum = boto_key['ETag'].strip('"')
 				last_modified = boto_key['LastModified']
 				modified_stamp = time.mktime(last_modified.timetuple())
@@ -418,26 +432,30 @@ class MyS3FilesStore(S3FilesStore):
 
 		# Upload file to S3 storage
 		key_name = f'{self.prefix}{path}'
-		logger.debug("pf key_name: "+key_name)
+		logger.debug("pf key_name: "+key_name +" - "+ self.bucket)
 		existiert_bereits=PipelineHelper.checkfile(spider, path, buf, checksum,LogFlag)
 		if not existiert_bereits:
-			if self.is_botocore:
-				logger.debug("pf is_botocore")
+			if self.is_botocore_available:
+				logger.debug("pf is_botocore_available")
 				extra = self._headers_to_botocore_kwargs(self.HEADERS)
 				if headers:
 					extra.update(self._headers_to_botocore_kwargs(headers))
 				logger.debug("pf schreibe nun")
-				return threads.deferToThread(
-					self.s3_client.put_object,
-					Bucket=self.bucket,
-					Key=key_name,
-					Body=buf,
-					Metadata={k: str(v) for k, v in (meta or {}).items()},
-					ACL=self.POLICY,
-					ContentType=ContentType,
-					**extra)
+				try:
+					return threads.deferToThread(
+						self.s3_client.put_object,
+						Bucket=self.bucket,
+						Key=key_name,
+						Body=buf,
+						Metadata={k: str(v) for k, v in (meta or {}).items()},
+						ACL=self.POLICY,
+						ContentType=ContentType,
+						**extra)				
+				except Exception as err:
+					logging.error(err)
+					# handle error here
 			else: #ohne botocore noch keine Metadaten und Tags
-				logger.debug("pf not is_botocore")
+				logger.debug("pf not is_botocore_available")
 				b = self._get_boto_bucket()
 				k = b.new_key(key_name)
 				if meta:
@@ -460,14 +478,14 @@ class MyS3FilesStore(S3FilesStore):
 	def _get_boto_key(self, path):
 		key_name = f'{self.prefix}{path}'
 		logger.debug("gbk key_name: "+key_name)
-		if self.is_botocore:
-			logger.debug("gbk is_botocore")
+		if self.is_botocore_available:
+			logger.debug("gbk is_botocore_available")
 			return threads.deferToThread(
 				self.s3_client.head_object,
 				Bucket=self.bucket,
 				Key=key_name)
 		else:
-			logger.debug("gkb not is_botocore")
+			logger.debug("gkb not is_botocore_available")
 			b = self._get_boto_bucket()
 			return threads.deferToThread(b.get_key, key_name)
 
@@ -965,6 +983,8 @@ class MyFilesPipeline(FilesPipeline):
 		s3store.AWS_SECRET_ACCESS_KEY = settings['AWS_SECRET_ACCESS_KEY']
 		s3store.AWS_ENDPOINT_URL = settings['AWS_ENDPOINT_URL']
 		s3store.AWS_REGION_NAME = settings['AWS_REGION_NAME']
+		s3store.AWS_URL = settings['AWS_URL']
+		s3store.AWS_BUCKET = settings['AWS_BUCKET']
 		s3store.AWS_USE_SSL = settings['AWS_USE_SSL']
 		s3store.AWS_VERIFY = settings['AWS_VERIFY']
 		s3store.POLICY = settings['FILES_STORE_S3_ACL']
@@ -983,7 +1003,9 @@ class MyFilesPipeline(FilesPipeline):
 		sftp_store.SFTP_PASSWORD = settings['SFTP_PASSWORD']
 
 		store_uri = settings['FILES_STORE']
+		logger.info("setting store from settings")
 		store = cls(store_uri, settings=settings)
+		logger.info("set store from settings")
 		return store
 
 	def _get_store(self, uri):

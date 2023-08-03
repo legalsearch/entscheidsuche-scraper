@@ -13,6 +13,7 @@ import copy
 
 from NeueScraper.pipelines import MyFilesPipeline
 from NeueScraper.pipelines import PipelineHelper
+from NeueScraper.pipelines import MyS3FilesStore
 
 logger = logging.getLogger(__name__)
 
@@ -70,15 +71,15 @@ class BasisSpider(scrapy.Spider):
 	def parse_gerichtsliste(self, response):
 		logger.debug("parse_gerichtsliste response.status "+str(response.status))
 		logger.info("parse_gerichtsliste Rohergebnis "+str(len(response.body))+" Zeichen")
-		logger.debug("parse_gerichtsliste Rohergebnis: "+response.body_as_unicode())
+		logger.debug("parse_gerichtsliste Rohergebnis: "+response.text)
 
 		self.scrapy_job=os.environ['SCRAPY_JOB']
 		logger.debug("SCRAPY_JOB: "+self.scrapy_job)
 
-		item= { 'Entscheidquellen': response.body_as_unicode() }
+		item= { 'Entscheidquellen': response.text }
 		yield(item)
 
-		virtualFile = StringIO(response.body_as_unicode())
+		virtualFile = StringIO(response.text)
 		reader = csv.DictReader(virtualFile)
 		for row in reader:
 			if 'Spider' in row:
@@ -366,14 +367,26 @@ class BasisSpider(scrapy.Spider):
 	
 			# Nun einlesen, was an Dateien vom letzten Spidern vorhanden ist
 			#jobs_url=self.JOBS_URL+self.name+"%2FJob_"
-			jobs_url=self.JOBS_URL+self.name+"/last"
-			logger.info("Jobs-URL: "+jobs_url)
-			yield scrapy.Request(url=jobs_url, callback=self.parse_dateiliste, errback=self.errback_httpbin, meta={'handle_httpstatus_list': [404]})
+			allJobs = MyS3FilesStore.shared_s3_client.list_objects(Bucket='lexsearch-crawler', Prefix='Jobs/'+self.name).get("Contents", [])
+			allJobs = list(filter(lambda k: k["Key"].endswith(".json"), allJobs))
+			logger.warning("allJobs")
+			logger.warning(allJobs)
+			if len(allJobs) == 0:
+				logger.info("Kein vorheriger Job gefunden. Erster Lauf von: "+self.name)
+				yield scrapy.Request(url=self.BLOCKLISTE, callback=self.parse_blockliste, errback=self.errback_httpbin)
+			else:
+				sortedJobs = sorted(allJobs, key=lambda k: k.get('Key', 0), reverse=True)
+				lastJob = sortedJobs[0]
+				logger.info("Last job in s3: %s", lastJob["Key"])
+				jobs_url=MyS3FilesStore.AWS_URL+lastJob["Key"]
+				logger.info("jobs_url "+jobs_url)
+
+				yield scrapy.Request(url=jobs_url, callback=self.parse_dateiliste, errback=self.errback_httpbin, meta={'handle_httpstatus_list': [404]})
 		
 	def parse_jobliste_S3(self, response):
 		logger.debug("parse_jobliste_S3 response.status "+str(response.status))
 		logger.info("parse_jobliste_S3 Rohergebnis "+str(len(response.body))+" Zeichen")
-		logger.debug("parse_jobliste_S3 Rohergebnis: "+response.body_as_unicode())
+		logger.debug("parse_jobliste_S3 Rohergebnis: "+response.text)
 		jobs=response.xpath("//*[local-name()='Contents']/*[local-name()='Key']/text()").getall()
 		if jobs:
 			jobs.sort(reverse=True)
@@ -385,8 +398,8 @@ class BasisSpider(scrapy.Spider):
 	def parse_dateiliste(self, response):
 		logger.info("parse_dateiliste response.status "+str(response.status))
 		logger.info("parse_dateiliste Rohergebnis "+str(len(response.body))+" Zeichen")
-		logger.info("parse_dateiliste Rohergebnis: "+response.body_as_unicode()[:10000])
-		previous_run=json.loads(response.body_as_unicode())
+		logger.info("parse_dateiliste Rohergebnis: "+response.text[:10000])
+		previous_run=json.loads(response.text)
 		if 'job' in previous_run and previous_run['job'] != 'nojob':
 			self.previous_run=previous_run
 			# Wird nur eine Teilabfrage gemacht, die Daten der vorherigen Abfrage übernehmen und mit der Quelle kennzeichnen
@@ -406,8 +419,8 @@ class BasisSpider(scrapy.Spider):
 	def parse_blockliste(self, response):
 		logger.info("parse_blockliste response.status "+str(response.status))
 		logger.info("parse_blockliste Rohergebnis "+str(len(response.body))+" Zeichen")
-		logger.info("parse_blockliste Rohergebnis: "+response.body_as_unicode()[:10000])
-		blockliste=json.loads(response.body_as_unicode())
+		logger.info("parse_blockliste Rohergebnis: "+response.text[:10000])
+		blockliste=json.loads(response.text)
 		if self.name in blockliste:
 			self.blockliste=blockliste[self.name]
 			logger.info("Blocklisteneinträge gefunden: "+json.dumps(blockliste[self.name]))
