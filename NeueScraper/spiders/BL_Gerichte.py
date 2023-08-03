@@ -42,7 +42,7 @@ class BL_Gerichte(BasisSpider):
 
 	def parse_jahresliste(self, response):
 		logger.info("parse_jahresliste response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_jahresliste Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_jahresliste Rohergebnis: "+antwort[:30000])
 		jahre=self.reJahre.findall(antwort)
@@ -58,7 +58,7 @@ class BL_Gerichte(BasisSpider):
 
 	def parse_trefferliste(self, response):
 		logger.info("parse_trefferliste response.status "+str(response.status)+" für URL "+response.url)
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_trefferliste Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_trefferliste Rohergebnis: "+antwort[:30000])
 		#Teilweise sind die Jahre nochmal aufgeteilt
