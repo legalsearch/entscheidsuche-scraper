@@ -82,7 +82,7 @@ class ZurichSozversSpider(BasisSpider):
 	def parse_searchform(self, response):
 		logging.debug("parse_searchform response.status "+str(response.status))
 		logging.info("parse_searchform Rohergebnis "+str(len(response.body))+" Zeichen")
-		logging.info("parse_searchform Rohergebnis: "+response.body_as_unicode())
+		logging.info("parse_searchform Rohergebnis: "+response.text)
 		jahr=response.meta['jahr']
 		viewId=response.xpath("//input[@id='view:_id1__VUID']/@value").get()
 		logging.info("search_request für Jahr "+str(jahr)+" mit viewId "+viewId)
@@ -96,7 +96,7 @@ class ZurichSozversSpider(BasisSpider):
 	def parse_trefferliste_forward(self, response):
 		logging.debug("parse_trefferliste_forward response.status "+str(response.status))
 		logging.info("parse_trefferliste_forward Rohergebnis "+str(len(response.body))+" Zeichen")
-		logging.debug("parse_trefferliste_forward Rohergebnis: "+response.body_as_unicode())
+		logging.debug("parse_trefferliste_forward Rohergebnis: "+response.text)
 		jahr=response.meta['jahr']
 		cookieJar = response.meta.setdefault('cookie_jar', CookieJar())
 		cookieJar.extract_cookies(response, response.request)
@@ -111,7 +111,7 @@ class ZurichSozversSpider(BasisSpider):
 	def parse_trefferliste(self, response):
 		logging.debug("parse_trefferliste response.status "+str(response.status))
 		logging.info("parse_trefferliste Rohergebnis "+str(len(response.body))+" Zeichen")
-		logging.debug("parse_trefferliste Rohergebnis: "+response.body_as_unicode())
+		logging.debug("parse_trefferliste Rohergebnis: "+response.text)
 		jahr=response.meta['jahr']
 		#Bei der ersten Trefferseite steht die view_ID und die Trefferzahl im HTML, danach wird sie mit meta übergeben
 		geholt=response.meta['geholt']
@@ -193,8 +193,8 @@ class ZurichSozversSpider(BasisSpider):
 		"""
 		logging.debug("parse_page response.status "+str(response.status))
 		logging.info("parse_page Rohergebnis "+str(len(response.body))+" Zeichen")
-		logging.debug("parse_page Rohergebnis: "+response.body_as_unicode())
+		logging.debug("parse_page Rohergebnis: "+response.text)
 		item=response.meta['item']
 
-		PipelineHelper.write_html(response.body_as_unicode(), item, self)
+		PipelineHelper.write_html(response.text, item, self)
 		yield(item)								

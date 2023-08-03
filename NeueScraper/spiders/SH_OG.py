@@ -48,7 +48,7 @@ class SH_OG(BasisSpider):
 
 	def parse_step0(self, response):
 		logger.debug("parse_step1 response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_step1 Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_step1 Rohergebnis: "+antwort[:30000])
 		request=scrapy.Request(url=self.HOST+self.START_URL, callback=self.parse_step1, errback=self.errback_httpbin)
@@ -57,7 +57,7 @@ class SH_OG(BasisSpider):
 
 	def parse_step1(self, response):
 		logger.debug("parse_step1 response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_step1 Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_step1 Rohergebnis: "+antwort[:30000])
 		struktur=json.loads(antwort)
@@ -68,7 +68,7 @@ class SH_OG(BasisSpider):
 		
 	def parse_step2(self, response):
 		logger.debug("parse_step2 response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_step2 Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_step2 Rohergebnis: "+antwort[:30000])
 		struktur=json.loads(antwort)
@@ -79,7 +79,7 @@ class SH_OG(BasisSpider):
 		
 	def parse_step3(self, response):
 		logger.debug("parse_step3 response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_step3 Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_step3 Rohergebnis: "+antwort[:30000])
 		struktur=json.loads(antwort)
@@ -93,7 +93,7 @@ class SH_OG(BasisSpider):
 		
 	def parse_jahr(self, response):
 		logger.debug("parse_jahr response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		jahr=response.meta['jahr']
 		logger.info("parse_jahr "+jahr+": "+response.url+" Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_jahr Rohergebnis: "+antwort[:30000])
@@ -111,7 +111,7 @@ class SH_OG(BasisSpider):
 			
 	def parse_doc(self, response):
 		logger.debug("parse_doc response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		jahr=response.meta['jahr']
 		doc=response.meta['doc']
 		logger.info("parse_doc "+jahr+": "+response.url+" Rohergebnis "+str(len(antwort))+" Zeichen")
@@ -155,7 +155,7 @@ class SH_OG(BasisSpider):
 		
 	def parse_file(self, response):
 		logger.debug("parse_file response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		jahr=response.meta['jahr']
 		doc=response.meta['doc']
 		item=response.meta['item']

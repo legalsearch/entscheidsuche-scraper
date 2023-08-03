@@ -69,7 +69,7 @@ class TribunaSpider(BasisSpider):
 		logger.info("Response Cookie Init with "+self.COOKIE_INIT+" with status: "+str(response.status))
 		if response.status == 200 and len(response.body) > self.MINIMUM_PAGE_LEN:
 			# construct and download document links
-			logger.info("Rohergebnis set_cookie: "+response.body_as_unicode())
+			logger.info("Rohergebnis set_cookie: "+response.text)
 			logger.info("Headers set_coookie: "+PH.mydumps(response.headers))
 			cookie=response.headers['Set-Cookie'].decode('ascii').split(';')[0].encode('ascii')
 			request=response.meta['request']
@@ -81,16 +81,16 @@ class TribunaSpider(BasisSpider):
 		""" Parses the current search result page, downloads documents and yields the request for the next search
 		result page
 		"""
-		logger.info("Rohergebnis: "+response.body_as_unicode())
+		logger.info("Rohergebnis: "+response.text)
 		if response.status == 200 and len(response.body) > self.MINIMUM_PAGE_LEN:
 			# construct and download document links
 			if self.page_nr==1:
-				treffer=self.reTreffer.search(response.body_as_unicode())
+				treffer=self.reTreffer.search(response.text)
 				if treffer:
 					logger.info("Trefferzahl: "+treffer.group())
 					self.trefferzahl=int(treffer.group())
 			
-			content = self.reVor.sub('',response.body_as_unicode())
+			content = self.reVor.sub('',response.text)
 			
 			logger.info("Ergebnisseite: "+content)
 
@@ -238,8 +238,8 @@ class TribunaSpider(BasisSpider):
 		item=response.meta['item']
 		logger.info("Decrypt-Path für DocID "+item['DocId'])
 		if response.status == 200:
-			logger.info("Rohergebnis Decrypt: "+response.body_as_unicode())
-			code=self.reDecrypt.search(response.body_as_unicode())
+			logger.info("Rohergebnis Decrypt: "+response.text)
+			code=self.reDecrypt.search(response.text)
 			if code:
 				numstr = item['Num'].replace(" ", "_")
 				href=self.PDF_PATTERN.format(self.DOWNLOAD_URL,numstr,item['DocId'],code.group(),numstr)

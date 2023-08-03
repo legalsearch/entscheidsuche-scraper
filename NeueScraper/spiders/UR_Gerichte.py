@@ -34,7 +34,7 @@ class UR_Gerichte(BasisSpider):
 
 	def parse_trefferliste(self, response):
 		logger.debug("parse_trefferliste response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_trefferliste Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.debug("parse_trefferliste Rohergebnis: "+antwort[:30000])
 
@@ -101,7 +101,7 @@ class UR_Gerichte(BasisSpider):
 			yield item
 			
 		else:
-			antwort=response.body_as_unicode()
+			antwort=response.text
 			logger.info("parse_details Rohergebnis "+str(len(antwort))+" Zeichen")
 			logger.debug("parse_details Rohergebnis: "+antwort[:30000])
 

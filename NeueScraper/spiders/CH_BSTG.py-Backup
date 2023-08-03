@@ -45,7 +45,7 @@ class CH_BSTG(WeblawSpider):
 	def parse_einzelseite(self, response):
 		logger.info("parse_einzelseite response.status "+str(response.status))
 		logger.info("parse_einzelseite Rohergebnis "+str(len(response.body))+" Zeichen")
-		logger.info("parse_einzelseite Rohergebnis: "+response.body_as_unicode())
+		logger.info("parse_einzelseite Rohergebnis: "+response.text)
 		entscheide=response.xpath("//table/tr[td[@class='table_data head2 nowrap']]")
 		logger.info(str(len(entscheide))+" potentielle Entscheide gefunden.")
 		for e in entscheide:

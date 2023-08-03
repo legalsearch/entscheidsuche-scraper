@@ -25,7 +25,7 @@ class CH_EDOEB(BasisSpider):
 
 	def parse_contentliste(self, response):
 		logger.info("parse_contentliste response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_contentliste Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_contentliste Rohergebnis: "+antwort[:80000])
 		listen=response.xpath("//div[h3/a[@title='Empfehlungen' or @title='Recommandations' or @title='Raccomandazioni']]/ul/li/a/@href")	
@@ -40,7 +40,7 @@ class CH_EDOEB(BasisSpider):
 
 	def parse_trefferliste(self, response):
 		logger.info("parse_trefferliste response.status "+str(response.status))
-		antwort=response.body_as_unicode()
+		antwort=response.text
 		logger.info("parse_trefferliste Rohergebnis "+str(len(antwort))+" Zeichen")
 		logger.info("parse_trefferliste Rohergebnis: "+antwort[:80000])
 		urteile=response.xpath("//div[@class='mod mod-download']/p")
