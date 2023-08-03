@@ -61,8 +61,13 @@ class BasisSpider(scrapy.Spider):
 	# Für alle Dokumente, für die wir keine Daten herbekommen können
 	ERSATZDATUM='2021-01-01'
 
-	def __init__(self):
-		super().__init__()
+	def __init__(self, *args, **kwargs):
+		super(BasisSpider, self).__init__(*args, **kwargs)
+		if "SCRAPY_JOB" in os.environ:
+			self.scrapy_job=os.environ['SCRAPY_JOB']
+		else:
+			self.scrapy_job = kwargs.get('_job')
+		logger.debug("SCRAPY_JOB: "+self.scrapy_job)
 
 	def start_requests(self):
 		# lese erst einmal die Spiderdaten und danach werden die Spider in der request_gen geladen.
@@ -72,9 +77,6 @@ class BasisSpider(scrapy.Spider):
 		logger.debug("parse_gerichtsliste response.status "+str(response.status))
 		logger.info("parse_gerichtsliste Rohergebnis "+str(len(response.body))+" Zeichen")
 		logger.debug("parse_gerichtsliste Rohergebnis: "+response.text)
-
-		self.scrapy_job=os.environ['SCRAPY_JOB']
-		logger.debug("SCRAPY_JOB: "+self.scrapy_job)
 
 		item= { 'Entscheidquellen': response.text }
 		yield(item)
