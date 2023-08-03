@@ -96,13 +96,13 @@ class NE_Omni(BasisSpider):
 		request=scrapy.Request(url=self.ERSATZ_HOST+self.ERSATZ_SUCH_URL+datumsbereich, callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'page': 1})
 		return request
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
-		self.neu=neu
+	def __init__(self, ab=None, neu=None, _job=None):
 		if ab:
 			self.ab=ab
 		else:
 			self.ab=self.AB
+		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		abdate=date.fromisoformat(self.ab)
 		heute=date.today()
 		requests=[]

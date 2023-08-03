@@ -45,11 +45,11 @@ class CH_BGer(BasisSpider):
 			von=bis+self.EINTAG
 		return requests
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
-		# Hier stehen immer nur die neuen Entscheide. Daher nie gesamt holen und austauschen.
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
 		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
+		# Hier stehen immer nur die neuen Entscheide. Daher nie gesamt holen und austauschen.
 		self.request_gen = self.request_generator(ab)
 
 

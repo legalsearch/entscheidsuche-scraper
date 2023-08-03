@@ -21,10 +21,10 @@ class AG_Weitere(BasisSpider):
 	reMeta=re.compile(r"(?P<Typ>[^ ]+) de(?:s|r)\s+(?P<Gericht>.+)\s+vom\s+(?P<Datum>\d+\.\s+(?:"+"|".join(BasisSpider.MONATEde)+")\s+\d\d\d\d)")
 	reMetaTable=re.compile(r"(?P<Titel>^[^\(]+)\s+\((?P<K1>[^\(]+)\)\s+\((?P<K2>[^\(]+)\)")
 	
-	def __init__(self, ab=None, neu=None):
-		self.neu=neu
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
-		super().__init__()
+		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.generate_request()
 
 	def generate_request(self):

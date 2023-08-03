@@ -18,9 +18,9 @@ class CH_EDOEB(BasisSpider):
 	URLs=["/edoeb/de/home/oeffentlichkeitsprinzip.html", "/edoeb/fr/home/principe-de-la-transparence.html", "/edoeb/it/home/principio-di-trasparenza.html",  "/edoeb/de/home/oeffentlichkeitsprinzip/empfehlungen/aeltere-empfehlungen/empfehlungen-2013.html", "/edoeb/fr/home/principe-de-la-transparence/empfehlungen/aeltere-empfehlungen/recommandations-2013.html", "/edoeb/it/home/principe-de-la-transparence/empfehlungen/aeltere-empfehlungen/recommandations-2013.html"]
 	HOST="https://www.edoeb.admin.ch"
 	
-	def __init__(self, neu=None):
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
-		super().__init__()
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [scrapy.Request(url=self.HOST+url,callback=self.parse_contentliste, errback=self.errback_httpbin) for url in self.URLs]
 
 	def parse_contentliste(self, response):

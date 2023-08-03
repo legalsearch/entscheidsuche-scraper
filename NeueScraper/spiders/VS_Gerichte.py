@@ -19,11 +19,11 @@ class VS_Gerichte(BasisSpider):
 	ITEMSPERPAGE=50
 	ab=None
 	
-	def __init__(self, ab=None, neu=None):
+	def __init__(self, ab=None, neu=None, _job=None):
+		self.ab=ab
 		self.neu=neu
-		super().__init__()
-		if ab:
-			self.ab=ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
+		if self.ab:
 			self.SUCH_URL+="&date_publication_gte="+self.ab
 		self.request_gen = [self.request_generator()]
 

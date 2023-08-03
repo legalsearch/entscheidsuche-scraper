@@ -41,9 +41,9 @@ class SH_OG(BasisSpider):
 		request=scrapy.Request(url=self.HOST+self.COOKIE_URL, callback=self.parse_step0, errback=self.errback_httpbin)
 		return request
 	
-	def __init__(self, neu=None):
-		super().__init__()
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [self.get_next_request()]
 
 	def parse_step0(self, response):

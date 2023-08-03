@@ -74,11 +74,11 @@ class TessinSpider(BasisSpider):
 		request=scrapy.FormRequest(url=self.HOST+self.SUCH_URL, formdata=self.FORMDATA, method="POST", callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'page': 1})
 		return [request]
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
+		self.ab=ab
 		self.neu=neu
-		if ab:
-			self.ab=ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
+		if self.ab:
 			self.FORMDATA['cEntscheiddatumVonJahr']=ab
 		self.request_gen = self.request_generator()
 

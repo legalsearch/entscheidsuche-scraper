@@ -65,11 +65,10 @@ class GenfSpider(BasisSpider):
 			start_datum='01.01.'+str(jahr)
 		return request_liste
 
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
+		self.ab=ab
 		self.neu=neu
-		if ab:
-			self.ab=ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.request_generator()
 
 	def parse_trefferliste(self, response):

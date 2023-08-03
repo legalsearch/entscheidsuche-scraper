@@ -17,10 +17,10 @@ class XX_Upload(BasisSpider):
 	URL='/docs/lese_upload.php'
 	PDF='/docs/view_upload.php'
 	
-	def __init__(self, ab=None, neu=None):
-		self.neu=neu
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
-		super().__init__()
+		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.generate_request()
 
 	def generate_request(self):

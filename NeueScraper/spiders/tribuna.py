@@ -55,11 +55,11 @@ class TribunaSpider(BasisSpider):
 			request=scrapy.Request(url=self.RESULT_PAGE_URL, method="POST", body=body, headers=self.HEADERS, callback=self.parse_page, errback=self.errback_httpbin, meta={'referrer_policy': "no-referrer"})
 		return [request]
 
-	def __init__(self,ab=None, neu=None):
+	def __init__(self, ab=None, neu=None, _job=None):
+		self.ab=ab
 		self.neu=neu
 		logger.info("__init__ in tribuna: Self ist vom Typ: "+str(type(self)))			
-		super().__init__()
-		self.ab = ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen=self.request_generator()
 
 	def set_cookie(self, response):	

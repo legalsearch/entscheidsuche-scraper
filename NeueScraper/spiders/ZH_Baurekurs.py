@@ -23,10 +23,10 @@ class ZH_Baurekurs(BasisSpider):
 	url=None
 	apikey=None
 	
-	def __init__(self, ab=None, neu=None):
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.neu=neu
 		self.ab=ab
-		super().__init__()
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = [self.generate_request()]
 
 	def generate_request(self, page=0):

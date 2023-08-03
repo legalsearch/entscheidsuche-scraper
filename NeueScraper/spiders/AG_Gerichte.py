@@ -30,9 +30,9 @@ class AargauSpider(BasisSpider):
 	}
 	DOWNLOAD_PATH="/api/main/v1/de/decrees_pdf/"
 	
-	def __init__(self, neu=None):
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
-		super().__init__()
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [scrapy.Request(url=self.HOST+self.SUCH_URL,method="POST", body="{}", headers=self.HEADERS, callback=self.parse_trefferliste, errback=self.errback_httpbin)]
 
 	def parse_trefferliste(self, response):

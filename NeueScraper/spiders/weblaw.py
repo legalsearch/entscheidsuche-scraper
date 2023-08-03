@@ -27,10 +27,10 @@ class WeblawSpider(BasisSpider):
 		request=scrapy.Request(url=self.DOMAIN+self.SUCH_URL, headers=self.HEADERS, callback=self.parse_suchform, errback=self.errback_httpbin)
 		return [request]
 
-	def __init__(self, ab=None, neu=None):
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
 		self.neu=neu
-		super().__init__()
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.request_generator(self.ab)
 
 	def parse_suchform(self,response):

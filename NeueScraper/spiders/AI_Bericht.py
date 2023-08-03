@@ -24,9 +24,9 @@ class AI_Bericht(BasisSpider):
 		request2 = scrapy.Request(url=self.URL2, callback=self.parse_trefferliste, errback=self.errback_httpbin)
 		return [request1, request2]
 	
-	def __init__(self, neu=None):
-		super().__init__()
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = self.request_generator()
 
 

@@ -23,9 +23,9 @@ class SG_Publikationen(BasisSpider):
 		request=scrapy.FormRequest(url=self.HOST+self.SUCH_URL.format(Seite=seite), callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'seite': seite}, headers=self.HEADERS)
 		return request
 	
-	def __init__(self, neu=None):
-		super().__init__()
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [self.get_next_request()]
 
 	def parse_trefferliste(self, response):

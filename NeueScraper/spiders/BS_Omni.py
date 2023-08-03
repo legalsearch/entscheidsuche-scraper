@@ -62,8 +62,8 @@ class BS_Omni(BasisSpider):
 			del self.HERKUNFT[0]
 		return request
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.neu=neu
 		if ab:
 			self.ab=ab

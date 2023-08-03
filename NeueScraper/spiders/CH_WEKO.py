@@ -18,9 +18,9 @@ class CH_WEKO(BasisSpider):
 	URL="/weko/de/home/praxis/publizierte-entscheide.html"
 	HOST="https://www.weko.admin.ch"
 	
-	def __init__(self, neu=None):
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
-		super().__init__()
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [scrapy.Request(url=self.HOST+self.URL,callback=self.parse_trefferliste, errback=self.errback_httpbin)]
 
 	def parse_trefferliste(self, response):

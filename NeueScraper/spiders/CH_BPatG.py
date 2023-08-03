@@ -36,9 +36,9 @@ class CH_BPatG(BasisSpider):
 		'tx_iscourtcases_entscheidesuche[formsearch]': '1'}
 	HOST="https://www.bundespatentgericht.ch"
 	
-	def __init__(self, neu=None):
+	def __init__(self, neu=None, _job=None):
 		self.neu=neu
-		super().__init__()
+		super().__init__(neu=neu, _job=_job)
 		self.request_gen = [scrapy.FormRequest(url=self.HOST+self.URL,formdata=self.BODY,callback=self.parse_trefferliste, errback=self.errback_httpbin)]
 
 	def parse_trefferliste(self, response):

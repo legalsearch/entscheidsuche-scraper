@@ -39,12 +39,12 @@ class CH_BSTG(BasisSpider):
 		elif 'from' in self.JSON: del self.JSON['from']
 		return scrapy.http.JsonRequest(url=self.HOST+self.URL, data=self.JSON, callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'from': fromwert, 'abdatum': abdatum, 'bisdatum':bisdatum})
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.ab=ab
+		self.neu=neu
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		if not ab:
 			ab=self.AB	
-		self.neu=neu
 		self.request_gen = [self.get_next_request(ab)]
 		
 	def parse_trefferliste(self, response):

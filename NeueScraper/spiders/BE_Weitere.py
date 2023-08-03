@@ -36,11 +36,10 @@ class BE_Weitere(BasisSpider):
 			request_liste.append(scrapy.Request(url=self.suchseiten[g][0]+self.suchseiten[g][1], callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'signatur': g, 'host': self.suchseiten[g][0], 'typ': self.suchseiten[g][2]}))		
 		return request_liste
 
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
+		self.ab=ab
 		self.neu=neu
-		if ab:
-			self.ab=ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.request_generator()
 
 	def parse_trefferliste(self, response):

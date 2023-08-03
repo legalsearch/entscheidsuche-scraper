@@ -46,10 +46,10 @@ class CH_BGE(BasisSpider):
 			requests.append(self.mache_request(jahr))
 		return requests
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.neu=neu
 		self.ab=ab
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = self.request_generator(ab)
 
 

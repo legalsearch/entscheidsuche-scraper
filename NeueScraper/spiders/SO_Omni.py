@@ -71,14 +71,14 @@ class SO_Omni(BasisSpider):
 		request=scrapy.FormRequest(url=self.HOST+self.SUCH_URL, formdata=self.FORMDATA, method="POST", callback=self.parse_trefferliste, errback=self.errback_httpbin, meta={'page': 1})
 		return request
 	
-	def __init__(self, ab=None, neu=None):
-		super().__init__()
+	def __init__(self, ab=None, neu=None, _job=None):
 		self.neu=neu
 		if ab:
 			self.ab=ab
 			self.FORMDATA['dEntscheiddatum']=ab
 			self.FORMDATA['dEntscheiddatumBis']=datetime.date.today().strftime("%d.%m.%Y")
 			self.FORMDATA['bHasEntscheiddatumBis']="1"
+		super().__init__(ab=ab, neu=neu, _job=_job)
 		self.request_gen = [self.get_next_request()]
 
 
